@@ -52,11 +52,12 @@ void setup() {
 void loop() {
   delay(dht.getMinimumSamplingPeriod());
  
-  int humidity = dht.getHumidity();
-  int temperature = dht.getTemperature();
+  float humidity = dht.getHumidity();
+  float temperature = dht.getTemperature();
  
   client.loop();
  
     
-  client.publish("esp778899/test1122",Serial.println(humidity),Serial.println(temperature));
+  client.publish("esp778899/test1122",Serial.println((float)(humidity),1),Serial.println((float)(temperature),1));
 }
+//this code is not working please look over it//
