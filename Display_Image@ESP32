@@ -1,0 +1,69 @@
+
+  #include <WiFi.h>
+  #include <ESPAsyncWebServer.h>
+  #include <SPIFFS.h>
+  const char* ssid = "NickiMinaj";
+  const char* password = "0987654321";
+
+  AsyncWebServer server(80);
+
+  const char index_html[] PROGMEM = R"rawliteral(
+  <!DOCTYPE HTML><html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h2>ESP Image Web Server</h2>
+    <img src="cap">
+    <img src="ironman">
+    <img src="groot">
+    <img src="hawkeye">
+    <img src="blackpanther">
+    <img src="starlord">
+  </body>  
+  </html>)rawliteral";
+
+
+  void setup(){
+    Serial.begin(115200);
+  
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.println("Connecting to WiFi..");
+    }
+    if(!SPIFFS.begin()){
+          Serial.println("An Error has occurred while mounting SPIFFS");
+          return;
+    }
+
+    Serial.println(WiFi.localIP());
+
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send_P(200, "text/html", index_html);
+    });
+  
+    server.on("/sun", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/cap.jpeg", "image/png");
+    });
+    server.on("/sun-cloud", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/ironman.jpeg", "image/png");
+    });
+    server.on("/cloud", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/groot.jpeg", "image/png");
+    });
+    server.on("/rain", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/hawkeye.jpg", "image/png");
+    });
+    server.on("/storm", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/blackpanther.jpeg", "image/png");
+    });
+    server.on("/snow", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send(SPIFFS, "/snow.pngstarlord.jpeg", "image/png");
+    });
+    server.begin();
+  }
+ 
+ void loop(){
+  
+  }
