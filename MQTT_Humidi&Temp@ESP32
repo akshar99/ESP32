@@ -1,0 +1,62 @@
+              
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHTesp.h"
+ 
+#define DHTpin 15   
+ 
+const char* ssid = "unable to connect"; 
+const char* password =  "alexsparky";
+const char* mqttServer = "test.mosquitto.org";
+const int mqttPort = 1883;
+WiFiClient espClient;
+PubSubClient client(espClient);
+DHTesp dht;
+ 
+void setup() {
+ 
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting to WiFi..");
+    Serial.begin(115200);
+  Serial.println();
+  Serial.println("Status\tHumidity (%)\tTemperature (C)\t(F)\tHeatIndex (C)\t(F)"); 
+  dht.setup(DHTpin, DHTesp::DHT11); 
+  }
+ 
+  Serial.println("Connected to the WiFi network");
+ 
+  client.setServer(mqttServer, mqttPort);
+ 
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT...");
+ 
+    if (client.connect("ESP32Client")) {
+ 
+      Serial.println("connected");
+ 
+    } else {
+ 
+      Serial.print("failed with state ");
+      Serial.print(client.state());
+      delay(2000);
+ 
+    }
+  }
+ 
+}
+ 
+void loop() {
+  delay(dht.getMinimumSamplingPeriod());
+ 
+  int humidity = dht.getHumidity();
+  int temperature = dht.getTemperature();
+ 
+  client.loop();
+ 
+    
+  client.publish("esp778899/test1122",Serial.println(humidity),Serial.println(temperature));
+}
